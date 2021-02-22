@@ -48,7 +48,7 @@ export class ExpandedDevice extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = { authsets: false, terminal: false };
+    this.state = { authsets: false, terminal: false, playback: false };
   }
 
   componentDidMount() {
@@ -76,7 +76,11 @@ export class ExpandedDevice extends React.Component {
   }
 
   _launchTerminal() {
-    this.setState({ terminal: true });
+    this.setState({ terminal: true, playback: false });
+  }
+
+  _launchPlayback() {
+    this.setState({ terminal: true, playback: true });
   }
 
   render() {
@@ -206,6 +210,22 @@ export class ExpandedDevice extends React.Component {
                   </span>
                 </Button>
               )}
+              {connect_status === DEVICE_CONNECT_STATES.connected && (
+                <Button
+                  onClick={() => self._launchPlayback()}
+                  startIcon={
+                    <SvgIcon fontSize="inherit">
+                      <path d={ConsoleIcon} />
+                    </SvgIcon>
+                  }
+                >
+                  <span className="inline-block">
+                    <Typography variant="subtitle2" style={buttonStyle}>
+                      playback Remote Terminal session
+                    </Typography>
+                  </span>
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -232,7 +252,12 @@ export class ExpandedDevice extends React.Component {
           open={this.state.authsets}
         />
 
-        <TerminalDialog open={this.state.terminal} onCancel={() => this.setState({ terminal: false })} deviceId={device.id} />
+        <TerminalDialog
+          open={this.state.terminal || this.state.playback}
+          onCancel={() => this.setState({ terminal: false, playback: false })}
+          deviceId={device.id}
+          playback={this.state.playback}
+        />
       </div>
     );
   }
